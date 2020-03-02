@@ -4,8 +4,12 @@ This script is hacked down quite fasten, please check results for validity!
 
 ## Options
   -k, --keyword <keyword>      keyword you are searching for
+
   -s, --startdate <startdate>  start date
+
   -e, --enddate <enddate>      end date
+
   -m, --medium <medium>        medium (wp=washington post, politico
+
   -h, --help                   output usage information
 
