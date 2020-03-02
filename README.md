@@ -15,7 +15,7 @@ This script is hacked down quite fasten, please check results for validity!
 
   -e, --enddate <enddate>      end date
 
-  -m, --medium <medium>        medium (wp=washington post, politico
+  -m, --medium <medium>        medium (wp=washington post, politico=politico)
 
   -h, --help                   output usage information
 
