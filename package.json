@@ -1,0 +1,19 @@
+{
+  "name": "article_search_crawl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "commander": "^4.1.1",
+    "csv-stringify": "^5.3.6",
+    "csv-writer": "^1.6.0",
+    "csvsync": "^1.3.2",
+    "postman-request": "^2.88.1-postman.18"
+  }
+}
