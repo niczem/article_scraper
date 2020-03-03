@@ -5,7 +5,7 @@ const fs = require('fs');
 const program = require('commander');
 
 program
-  .description('scrape news articles matching a keyword in a given time range \n e.g. \n node index.js --keyword potato --startdate 06-01-2018 --enddate 06-01-2019 --medium wp')
+  .description('scrape news articles matching a keyword in a given time range \n e.g. \n journalctl -xenode index.js --keyword potato --startdate 06-01-2018 --enddate 06-01-2019 --medium wp')
   .option('-k, --keyword <keyword>', 'keyword you are searching for')
   .option('-s, --startdate <startdate>', 'start date')
   .option('-e, --enddate <enddate>', 'end date')
@@ -104,7 +104,7 @@ function storeHeader(medium, writeStream){
 	if(medium == 'wp'){
 		field_array = ['systemid','contenttype','contenturl','headline','mobileheadline','sourcenav','byline','pubdatetime','pubdatetimestring','displaydatetime','primarysection','blurb','keyword','smallthumburl'];
 	}else if(medium == 'politico'){
-		field_array = ['systemid','linl','date','title','category','teaser','img'];
+		field_array = ['systemid','link','date','title','category','teaser','img'];
 	}
 
 	for(let i in field_array){
