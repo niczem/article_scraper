@@ -3,9 +3,10 @@ const stringify = require('csv-stringify');
 const cheerio = require('cheerio');
 const fs = require('fs');
 const program = require('commander');
+const CSV = require('csv-string');
 
 program
-  .description('scrape news articles matching a keyword in a given time range \n e.g. \n journalctl -xenode index.js --keyword potato --startdate 06-01-2018 --enddate 06-01-2019 --medium wp')
+  .description('scrape news articles matching a keyword in a given time range \n e.g. \n node index.js --keyword potato --startdate 06-01-2018 --enddate 06-01-2019 --medium wp')
   .option('-k, --keyword <keyword>', 'keyword you are searching for')
   .option('-s, --startdate <startdate>', 'start date')
   .option('-e, --enddate <enddate>', 'end date')
@@ -85,7 +86,7 @@ function getOverviewWP(offset,number_of_results){
 
 	// crawl all articles since 2005 =>	let url = `https://sitesearchapp.washingtonpost.com/sitesearch-api/v2/search.json?count=${number_of_results}&datefilter=displaydatetime:%5B*+TO+NOW%2FDAY%2B1DAY%5D&facets.fields=%7B!ex%3Dinclude%7Dcontenttype,%7B!ex%3Dinclude%7Dname&highlight.fields=headline,body&highlight.on=true&highlight.snippets=1&query=${keyword}&sort=displaydatetime+desc&startat=${offset}`;
 	let crawlingperiod = '3YEARS+TO+NOW';
-	let url = `https://sitesearchapp.washingtonpost.com/sitesearch-api/v2/search.json?count=${number_of_results}&datefilter=displaydatetime:%5BNOW%2FDAY-${crawlingperiod}%2FDAY%2B1DAY%5D&facets.fields=%7B!ex%3Dinclude%7Dcontenttype,%7B!ex%3Dinclude%7Dname&highlight.fields=headline,body&highlight.on=true&highlight.snippets=1&query=${keyword}&sort=displaydatetime+desc&startat=${offset}`;
+	let url = `https://sitesearchapp.washingtonpost.com/sitesearch-api/v2/search.json?count=${number_of_results}&datefilter=displaydatetime:%5BNOW%2FDAY-${crawlingperiod}%2FDAY%2B1DAY%5D&facets.fields=%7B!ex%3Dinclude%7Dcontenttype,%7B!ex%3Dinclude%7Dname&highlight.fields=headline,body&highlight.on=true&filter=%7B!tag%3Dinclude%7Dcontenttype:("Article")&highlight.snippets=1&query=${keyword}&sort=displaydatetime+desc&startat=${offset}`;
 
 	console.log(url);
 	return new Promise(function(resolve, reject) {
@@ -125,7 +126,7 @@ function storeResult(medium,writeStream, result){
 
 	console.log(result.contenttype,results_stored.indexOf(result.systemid));
 	if(results_stored.indexOf(result.systemid)>-1){
-		console.log('double');
+		console.log('double', results_stored.indexOf(result.systemid));
 		console.log(result.systemid);
 		return false
 	}
@@ -144,7 +145,7 @@ function storeResult(medium,writeStream, result){
 		}
 
 		if(result[field_array[i]])
-			new_line.push(`"${result[field_array[i]]}"`);
+			new_line.push(result[field_array[i]]);
 		else
 			new_line.push('');
 	}
@@ -152,7 +153,7 @@ function storeResult(medium,writeStream, result){
 
 
 	return new Promise(function(resolve, reject) {	
-	    writeStream.write(new_line.join(',')+ '\n', () => {
+	    writeStream.write(CSV.stringify(new_line), () => {
 	        // a line was written to stream
 	        resolve();
 	    })
@@ -163,7 +164,7 @@ function run(){
 	(async function loop() {
 
 		let start_offset = 0;
-		let number_of_results=100;
+		let number_of_results=1000;
 		let max_iterations = 1000;
 
 
@@ -186,8 +187,12 @@ function run(){
 
 				//max_iterations = result.total/number_of_results;
 	        }
-	        console.log(result);
+	        //console.log('result');
+	        //console.log(result);
 	        if(result.documents&&result.documents.length>0){
+
+
+
 
 				for(let n in result.documents){
 					let document_date = new Date(result.documents[n].pubdatetime);
@@ -195,16 +200,17 @@ function run(){
 					if(+document_date >= +start_date&&+document_date <= +end_date){
 						console.log('hit');
 						console.log(document_date);
-						if(result.documents[i]){
+						if(result.documents[n]){
 
 							//delete result.documents[i].keyword;
-							result.documents[i].pubdatetimestring = document_date;
+							result.documents[n].pubdatetimestring = document_date;
 							//console.log(result.documents[i]);
-							if(typeof result.documents[i].keyword == 'object')
-								result.documents[i].keyword = result.documents[i].keyword.join(',');
+							if(typeof result.documents[n].keyword == 'object')
+								result.documents[n].keyword = result.documents[i].keyword.join(',');
 							//console.log(result.documents[i]);
 							//await csvWriter.writeRecords(result.documents[i])
-							await storeResult(medium, writeStream,result.documents[i]);
+							console.log('store result '+result.documents[n].systemid);
+							await storeResult(medium, writeStream,result.documents[n]);
 							//results.push(result.documents[i]);
 							//fs.writeFileSync('out_file.csv', csv);
 						}
